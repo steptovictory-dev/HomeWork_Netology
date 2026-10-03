@@ -32,9 +32,36 @@ def read_cook_book(file_path):
             cook_book[dish_name] = ingredients      # Сохраняем словарь под названием блюда
     return cook_book
 
+def get_shop_list_by_dishes(dishes, person, cook_book):
+    shop_list = {}          # Общий словарь покупок для всех выбранных блюд
+
+    for dish_name in dishes:
+        # Получаем список ингередиентов блюда
+        for ingredient in cook_book[dish_name]:
+            ingredient_name = ingredient['ingredient_name']
+            quantity = ingredient['quantity'] * person
+            measure = ingredient['measure']
+
+            # Повторяющийся ингередиент добавляем к уже накопившемуся кол-ву
+            if ingredient_name in shop_list:
+                shop_list[ingredient_name]['quantity'] += quantity
+            else:
+                # Если такого не было, то запишем этот ингредиент
+                shop_list[ingredient_name] ={
+                    'measure': measure,
+                    'quantity': quantity,
+                }
+
+    return shop_list
+  
 def main():
     cook_book = read_cook_book('recipes.txt')
-    # print(cook_book)
-    pprint(cook_book, sort_dicts=False, width=120)
+    shop_list = get_shop_list_by_dishes(
+        ['Запеченный картофель', 'Омлет'],
+        2,
+        cook_book,
+    )
+
+    pprint(shop_list, sort_dicts=False, width=120)
 
 main()
